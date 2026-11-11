@@ -8,6 +8,10 @@
 # has not been announced yet. Announced file names are kept in <SEEN>,
 # one per line. Only the COUNT of new messages is passed to Claude.
 # The named mutex of the PowerShell version becomes flock on a lock file.
+# Note: flock is not installed by default on macOS. Either install it
+# (e.g. Homebrew: brew install flock), or replace the lock below with
+# an mkdir-based lock (mkdir is atomic: take a lock directory, and
+# remove it when done).
 # Replace the placeholders before use: <INBOX>, <LOG>, <SEEN>
 
 REASON="${1:-bell}"

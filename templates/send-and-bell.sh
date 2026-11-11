@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 # claude-doorbell — A 側スニペット（bash 版）: 手紙を置いてベルを鳴らす
 #
+# どちらのスニペットを使うか:
+#   B の SSH セッションが入るシェルに合わせて選ぶこと。
+#   - この .sh は、B が macOS/Linux（リモートで mv / date / cat が使える）前提。
+#   - B が Windows で、SSH が PowerShell に入る場合は send-and-bell.ps1 を使う。
+#     Windows OpenSSH の既定シェルは cmd.exe なので、その場合はどちらも
+#     そのままでは動かない（SKILL.md ステップ4 参照）。
+#
 # 使い方:
 #   ./send-and-bell.sh <件名> <手紙ファイル>
 #

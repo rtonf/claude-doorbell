@@ -1,24 +1,32 @@
-# claude-doorbell — A 側スニペット（PowerShell 版）: 手紙を置いてベルを鳴らす
+# claude-doorbell -- A-side snippet (PowerShell version): place a letter and ring the bell.
 #
-# 使い方:
-#   .\send-and-bell.ps1 -Subject "<件名>" -Letter "<手紙ファイル>"
+# Which snippet to use: pick by the shell that B's SSH session lands in.
+#   - This .ps1 sends remote commands that assume PowerShell on B
+#     (Rename-Item / Set-Content / Get-Content). The default shell of
+#     Windows OpenSSH is cmd.exe, so use this only if B's SSH lands in
+#     PowerShell. If B is macOS/Linux, or its SSH lands in cmd.exe, use
+#     the .sh version's style of commands instead -- see SKILL.md step 4.
 #
-# 手紙ファイルは、from / to / date / type / reply のヘッダを書いた
-# Markdown を用意しておくこと。本文の書き方はメールボックスの README 参照。
+# Usage:
+#   .\send-and-bell.ps1 -Subject "<subject>" -Letter "<letter-file>"
 #
-# やっていること:
-#   1. 手紙を <YYYYMMDD-HHMM_件名>.tmp として B 側メールボックスへ送る
-#   2. .md に改名する（完成の合図。相手は .tmp を読まない）
-#   3. 宛先フォルダの中の _bell.txt を現在時刻で書き換える（相手を起こすベル）
-#   4. ベルを読み戻して、書けたことを確認する
+# The letter file must be a Markdown file whose first lines are the
+# from / to / date / type / reply headers. See the mailbox README for
+# how to write the body.
+#
+# What it does:
+#   1. Sends the letter to B's mailbox as <YYYYMMDD-HHMM_subject>.tmp
+#   2. Renames it to .md (the "finished" signal; the other side never reads .tmp)
+#   3. Rewrites _bell.txt in the destination folder with the current time (the bell that wakes B)
+#   4. Reads the bell back to confirm it was written
 param(
     [Parameter(Mandatory = $true)][string]$Subject,
     [Parameter(Mandatory = $true)][string]$Letter
 )
 
-$RemoteHost = "<ssh-host>"            # B 側マシンへの SSH 接続先（Tailscale の名前や IP）
-$Mailbox    = "<remote-mailbox-path>" # B 側メールボックスの絶対パス（例: C:\path\to\mailbox）
-$ToDir      = "to-b"                  # 宛先フォルダ（B 宛）
+$RemoteHost = "<ssh-host>"            # SSH target for B's machine (Tailscale name or IP)
+$Mailbox    = "<remote-mailbox-path>" # Absolute path of the mailbox on B (e.g. C:\path\to\mailbox)
+$ToDir      = "to-b"                  # Destination folder (letters for B)
 
 $Name = (Get-Date -Format "yyyyMMdd-HHmm") + "_" + $Subject
 

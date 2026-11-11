@@ -39,7 +39,7 @@
 - B 側に、**hook を備えたエージェント実行環境**（Claude Code）があり、専用チャット（セッション）を常駐させられる。必要な hook の機能は、`SessionStart` / `FileChanged` / `CwdChanged`、`FileChanged` の `watchPaths`、`asyncRewake` です。
   - 動作を確かめた組み合わせは **Windows 11 ＋ Windows PowerShell 5.1 ＋ Claude Code 2.1.321（デスクトップアプリの Code タブ）** だけです。必要な機能がいつから使えるかは未確認です。
   - macOS / Linux は未検証です。bash への移植版テンプレを用意してありますが、使う場合はテスト手順を省略しないでください。
-- A 側は SSH 越しにファイル配置（scp 等）とコマンド実行ができる。
+- A 側は SSH 越しにファイル配置（scp 等）とコマンド実行ができる。送信スニペット（`templates/send-and-bell.sh` / `send-and-bell.ps1`）は、B の SSH セッションが入るシェルに合わせて選ぶ（`.ps1` 版は B 側で PowerShell が動く前提。Windows OpenSSH の既定シェルは cmd.exe）。
 
 ## 使い方
 

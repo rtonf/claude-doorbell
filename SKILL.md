@@ -30,7 +30,7 @@
   - 動作を確かめた組み合わせは **Windows 11 ＋ Windows PowerShell 5.1 ＋ Claude Code 2.1.321（デスクトップアプリの Code タブ）** だけです。必要な機能がいつから使えるかは未確認なので、古い版では動かない可能性があります。まず版を確認してください。
   - hook は、**専用チャットのセッションが動いているあいだだけ**働きます。デスクトップアプリが閉じている間は届きません。また、アプリを開き直しただけでは専用チャットは動き出さないことがあります。「アプリを開き直したら、専用チャットを開いて一度動かす」を持ち主の習慣にしてください。セッション開始時の hook が、その間にたまった未読を拾います。
 - Windows PowerShell 5.1 の注意：BOM のない `.ps1` は ANSI として読まれます。hook のスクリプトに日本語などの非 ASCII 文字を入れると壊れるので、スクリプトは **ASCII だけで書く**か、**BOM 付き UTF-8 で保存**してください（`templates/hooks/` の PowerShell 版は ASCII で書いてあります）。
-- macOS / Linux：未検証です。移植版のスクリプト（`templates/hooks/*.sh`、要 `jq` と `flock`）と設定例（`templates/hooks-settings.example.bash.json`）を用意してありますが、動かして確かめたものではありません。使う場合は、ステップ 5 のテストを省略しないでください。
+- macOS / Linux：未検証です。移植版のスクリプト（`templates/hooks/*.sh`、要 `jq` と `flock`）と設定例（`templates/hooks-settings.example.bash.json`）を用意してありますが、動かして確かめたものではありません。使う場合は、ステップ 5 のテストを省略しないでください。なお `flock` は macOS に標準では入っていないので、Homebrew で入れるか（`brew install flock`）、`mkdir` ベースの代替ロック（フォルダの作成は原子的。ロック用フォルダを作って排他を取り、終わったら消す）に置き換えてください。
 
 ## ステップ 2：メールボックスフォルダを作る
 
@@ -86,7 +86,7 @@ hook は5つの登録からなります。
 
 ## ステップ 4：送信側と、専用チャットの決まりを用意する
 
-- A 側には「手紙を書く→置く→ベル」のスニペットを用意します。雛形：`templates/send-and-bell.sh`（bash 版）、`templates/send-and-bell.ps1`（PowerShell 版）。要点は3つです。
+- A 側には「手紙を書く→置く→ベル」のスニペットを用意します。雛形：`templates/send-and-bell.sh`（bash 版）、`templates/send-and-bell.ps1`（PowerShell 版）。どちらの版を使うかは、**B の SSH セッションが入るシェル**で決めてください。`.ps1` 版が送るリモートコマンドは B 側で PowerShell が動く前提（`Rename-Item`、`Set-Content` 等）ですが、Windows OpenSSH の既定シェルは cmd.exe です。B が macOS/Linux の場合は `.sh` 版、B の SSH が PowerShell に入る設定になっている場合は `.ps1` 版を選んでください。要点は3つです。
   1. 手紙は `.tmp` で置き、完成したら `.md` に改名する（リモート側でも同じ順序を守る）。
   2. 改名のあとで、**相手の受け箱の中の** `_bell.txt` を現在時刻（`yyyy-MM-dd HH:mm`）で書き換える。
   3. 書き換え後にベルの中身を読み戻して、書けたことを確認する。
